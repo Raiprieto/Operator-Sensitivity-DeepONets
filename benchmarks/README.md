@@ -6,8 +6,17 @@ This directory contains standalone benchmark utilities and diagnostic pipelines 
 
 ## Benchmark Scripts
 
-### 1. Post-Hoc Jacobian Uncertainty (`posthoc_jacobian.py`)
-Extracts the latent branch Jacobian from an existing deterministic DeepONetCartesianProd (trained purely with MSE loss) to construct a spatial sensitivity prior without retraining. A single scalar is then calibrated via split-conformal prediction on the calibration split:
+### 1. Jacobian Conformal Bands (JCB) Post-Hoc Benchmark (`posthoc_jacobian.py`)
+Implements the training-free Jacobian Conformal Bands (JCB) framework on already-trained deterministic DeepONet operators:
+- **Zero Retraining:** Extracts the latent branch Jacobian from a plain `DeepONetCartesianProd` (trained exclusively with MSE loss) via $K$ reverse-mode vector-Jacobian products.
+- **Sensitivity Shaping:** Computes the exact pointwise sensitivity template $s(x) = \sqrt{\mathrm{diag}(T(x) G T(x)^T)}$ and normalizes it over the calibration set.
+- **Comparative Shapes:** Evaluates multiple non-parametric band geometries under identical split-conformal calibration:
+  - `const`: Constant width (standard split-conformal prediction baseline).
+  - `posthoc`: Raw linear Jacobian sensitivity shape.
+  - `posthoc_log1p`: Logarithmically compressed Jacobian shape $\log(1 + s / \bar{s})$.
+  - `posthoc_persample`: Per-sample localized shape ablation.
+  - `mc_perturb_M64`: Empirical perturbation Monte Carlo baseline through the deterministic backbone.
+
 ```bash
 python benchmarks/posthoc_jacobian.py \
     --test data/burgers_test_500.h5 \
