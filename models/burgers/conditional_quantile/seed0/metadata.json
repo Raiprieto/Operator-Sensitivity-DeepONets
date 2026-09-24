@@ -1,0 +1,219 @@
+{
+  "status": "completed",
+  "benchmark": "burgers_baselines",
+  "model": "quantile_ux",
+  "lambda": 4.0,
+  "seed": 0,
+  "smoke": false,
+  "commit": "48793ae9b2c86b115e059c6185d2820cb92b2120",
+  "config": {
+    "benchmark": "burgers_baselines",
+    "description": "EXPERIMENTO (Burgers): baselines con la MISMA arquitectura, datos, lambda y semillas que el Jacobian de burgers. Escalera de ablacion del ancho: constante (vanilla) -> espacial (quantile_x) -> condicionado en la muestra (quantile_ux).",
+    "data_from": "burgers",
+    "model": {
+      "branch": [
+        129,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "trunk": [
+        2,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "activation": "swish",
+      "sigma": {
+        "jacobian": 0.025,
+        "vanilla": 0.025
+      }
+    },
+    "train": {
+      "optimizer": "adam",
+      "iterations": 200000,
+      "display_every": 1000,
+      "val_every": 5000,
+      "val_infer_batch": 50,
+      "unc_ref_subset": 1024,
+      "selection_metric": "interval_score",
+      "patience": null,
+      "min_select_step": 0,
+      "batch_size": 128,
+      "learning_rate": 0.001,
+      "decay_rate": 0.7,
+      "decay_steps": 50000
+    },
+    "sweep": {
+      "models": [
+        "vanilla",
+        "quantile_x",
+        "quantile_ux"
+      ],
+      "lambdas": [
+        4
+      ],
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "note": "Mismo test que burgers. Completa la comparacion de disenos de UQ en el tercer benchmark."
+    },
+    "source": "Derivada de burgers.json: misma arquitectura, datos y receta; solo cambian el modelo, la perdida y la metrica de seleccion.",
+    "_smoke": false,
+    "data": {
+      "append_params": true,
+      "splits": {
+        "train": {
+          "generator": "burgers",
+          "n": 15000,
+          "seed": 3000000,
+          "jacobian": false
+        },
+        "val": {
+          "generator": "burgers",
+          "n": 500,
+          "seed": 2000000,
+          "jacobian": false
+        },
+        "test": {
+          "generator": "burgers",
+          "n": 500,
+          "seed": 1000000,
+          "jacobian": true
+        }
+      },
+      "generator_args": {
+        "nx": 128,
+        "nt": 100,
+        "L": 1.0,
+        "T": 1.0,
+        "nu_min": 0.001,
+        "nu_max": 0.1,
+        "batch_size": 100
+      },
+      "notes": "nu ~ U(0.001, 0.1): es el rango de los datos del paper (el texto dice 0.01; corregir el paper)."
+    },
+    "_config_md5": "44543a94047be0c380183b0c9f4af4a0",
+    "_data_benchmark": "burgers",
+    "_data_config_md5": "97a03a719edabe86853e2ae84bdbfcab"
+  },
+  "data_md5": {
+    "train": "314cace0bf17b565bacafeae5cace686",
+    "val": "a4ba02d5eb411835f415fed2626e5bf8",
+    "test": "bcc55830ac24cd0521e373d61a4f1aaf"
+  },
+  "sigma": null,
+  "architecture": {
+    "branch": [
+      129,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "slurm_job": "916241",
+  "slurm_array_task": "6",
+  "host": "compute-gpu-2-9.mansci.uai.cl",
+  "started": "2026-09-24 02:06:08",
+  "versions": {
+    "python": "3.9.25",
+    "torch": "2.8.0+cu128",
+    "deepxde": "1.15.0",
+    "gpu": "NVIDIA A100 80GB PCIe"
+  },
+  "train_seconds": 1087.1,
+  "best_step": 200000,
+  "best_val_subset_ref": {
+    "mse": 0.001295627560466528,
+    "picp": 88.69825,
+    "mpiw": 0.03296414017677307,
+    "nll": -4.522051811218262,
+    "interval_score": 0.04363437741994858,
+    "n_samples": 500,
+    "decile_picp": [
+      92.12296875,
+      92.2725,
+      90.169375,
+      90.6728125,
+      88.86609375,
+      87.9228125,
+      88.05265625,
+      87.13796875,
+      87.01828125,
+      82.74703125
+    ],
+    "decile_mpiw": [
+      0.008487858809530735,
+      0.01043920312076807,
+      0.012311870232224464,
+      0.013126425445079803,
+      0.014917613007128239,
+      0.01734682358801365,
+      0.01974426954984665,
+      0.026795998215675354,
+      0.05305479094386101,
+      0.15341658890247345
+    ],
+    "nonfinite": false
+  },
+  "val": {
+    "mse": 0.001295627560466528,
+    "picp": 88.69825,
+    "mpiw": 0.03296414017677307,
+    "nll": -4.522051811218262,
+    "interval_score": 0.04363437741994858,
+    "n_samples": 500,
+    "decile_picp": [
+      92.12296875,
+      92.2725,
+      90.169375,
+      90.6728125,
+      88.86609375,
+      87.9228125,
+      88.05265625,
+      87.13796875,
+      87.01828125,
+      82.74703125
+    ],
+    "decile_mpiw": [
+      0.008487858809530735,
+      0.01043920312076807,
+      0.012311870232224464,
+      0.013126425445079803,
+      0.014917613007128239,
+      0.01734682358801365,
+      0.01974426954984665,
+      0.026795998215675354,
+      0.05305479094386101,
+      0.15341658890247345
+    ],
+    "nonfinite": false
+  },
+  "unc_ref": null,
+  "unc_ref_n": null,
+  "stopped_early": false,
+  "iterations_run": 200000,
+  "selection_metric": "interval_score",
+  "finished": "2026-09-24 02:24:20"
+}

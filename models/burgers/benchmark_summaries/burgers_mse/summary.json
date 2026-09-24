@@ -1,0 +1,33 @@
+{
+  "benchmark": "burgers_mse",
+  "smoke": false,
+  "selection": "lambda con menor interval score medio en validacion",
+  "selected_lambda": {
+    "mse": 0.0
+  },
+  "rows": [
+    {
+      "model": "mse",
+      "lambda": 0.0,
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "val_interval_score": 0.20827950537204742,
+      "test_mse_mean": 0.0015371492675816019,
+      "test_mse_std": 1.3783161253572334e-05,
+      "test_picp_mean": 6.770833333333334e-05,
+      "test_picp_std": 2.386758174456167e-05,
+      "test_mpiw_mean": 0.0,
+      "test_mpiw_std": 0.0,
+      "test_nll_mean": 76849.17708333333,
+      "test_nll_std": 689.1571934975696,
+      "test_interval_score_mean": 0.25380106767018634,
+      "test_interval_score_std": 0.0021329974123033926,
+      "test_picp_legacy_batchmean_mean": null,
+      "selected_by_val": true
+    }
+  ]
+}

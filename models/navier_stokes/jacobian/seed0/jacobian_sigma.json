@@ -1,0 +1,25 @@
+{
+  "model": "jacobian",
+  "lambda": 4.0,
+  "seed": 0,
+  "mse": 0.001066649449057877,
+  "sigma_ref_norm": 1.2706607392219973,
+  "sigma_batch_rel_drift": 1.3485794767644768e-07,
+  "rho_err": {
+    "phys": 0.25612919433246906,
+    "norm": 0.5149400594568612,
+    "band_proxy": 0.5149995102326198,
+    "ystd": 0.0053939654407174015
+  },
+  "rho_sens": {
+    "phys": 0.29854714628875123,
+    "norm": 0.5237497607260456,
+    "band_proxy": 0.5238343286786341,
+    "ystd": 0.007610115575538883
+  },
+  "selftest_rho_width_vs_band_proxy": 0.9999999997650703,
+  "rho_err_width": 0.5149995555799867,
+  "commit_eval": "5de8ed2f0db5c8a0ebc6f17b044a511538cb6e93",
+  "dataset": "test.h5",
+  "data_md5": "7d061a143dee1ecb61225af6dace1313"
+}

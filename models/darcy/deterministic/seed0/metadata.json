@@ -1,0 +1,219 @@
+{
+  "status": "completed",
+  "benchmark": "darcy_small_mse",
+  "model": "mse",
+  "lambda": 0.0,
+  "seed": 0,
+  "smoke": false,
+  "commit": "da9d2cb42bd99c9b01646114c8ace2c4ab044826",
+  "config": {
+    "benchmark": "darcy_small_mse",
+    "description": "EXPERIMENTO (Darcy): DeepONet determinista (MSE puro, sin bandas) con la MISMA arquitectura chica, datos y semillas que darcy_small. Es el modelo base de los benchmarks Monte Carlo y del metodo Delta, donde la incertidumbre se construye despues perturbando la entrada.",
+    "data_from": "darcy",
+    "model": {
+      "branch": [
+        1024,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "trunk": [
+        2,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "activation": "swish",
+      "sigma": {
+        "jacobian": 0.025,
+        "vanilla": 0.025
+      }
+    },
+    "train": {
+      "optimizer": "adam",
+      "iterations": 200000,
+      "display_every": 1000,
+      "val_every": 5000,
+      "val_infer_batch": 50,
+      "unc_ref_subset": 1024,
+      "selection_metric": "mse",
+      "patience": 8,
+      "min_select_step": 0,
+      "batch_size": 128,
+      "learning_rate": 0.001,
+      "decay_rate": 0.7,
+      "decay_steps": 50000
+    },
+    "sweep": {
+      "models": [
+        "mse"
+      ],
+      "lambdas": [
+        0
+      ],
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "note": "lambda=0: el determinista no usa pinball, la perdida es MSE puro."
+    },
+    "source": "Derivada de darcy_small_baselines.json; solo cambian el modelo, la perdida y la metrica de seleccion.",
+    "input_transform": {
+      "type": "grid_stride",
+      "grid": [
+        64,
+        64
+      ],
+      "stride": 2
+    },
+    "_smoke": false,
+    "data": {
+      "append_params": true,
+      "splits": {
+        "train": {
+          "generator": "darcy",
+          "n": 10000,
+          "seed": 3000000,
+          "jacobian": false
+        },
+        "val": {
+          "generator": "darcy",
+          "n": 500,
+          "seed": 2000000,
+          "jacobian": false
+        },
+        "test": {
+          "generator": "darcy",
+          "n": 1000,
+          "seed": 1000000,
+          "jacobian": false
+        }
+      },
+      "generator_args": {
+        "N": 64,
+        "batch_size": 20
+      }
+    },
+    "_config_md5": "a1a024db75367a3f0eda57ab5034f496",
+    "_data_benchmark": "darcy",
+    "_data_config_md5": "bbcd7d4cb858361ae0059601b494d3f1"
+  },
+  "data_md5": {
+    "train": "18d05615a99e41ce972484a025350d3f",
+    "val": "a5630c9340d237758babe92863b615b1",
+    "test": "06c882677a5b7aff3ffccfc14c401a92"
+  },
+  "sigma": null,
+  "architecture": {
+    "branch": [
+      1024,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "slurm_job": "914682",
+  "slurm_array_task": "0",
+  "host": "compute-gpu-2-8.mansci.uai.cl",
+  "started": "2026-09-23 15:43:00",
+  "versions": {
+    "python": "3.9.25",
+    "torch": "2.8.0+cu128",
+    "deepxde": "1.15.0",
+    "gpu": "NVIDIA A30 MIG 1g.6gb"
+  },
+  "train_seconds": 824.2,
+  "best_step": 190000,
+  "best_val_subset_ref": {
+    "mse": 2.3136406070989324e-06,
+    "picp": 9.765625e-05,
+    "mpiw": 0.0,
+    "nll": 107.39063262939453,
+    "interval_score": 0.017062636092305183,
+    "n_samples": 500,
+    "decile_picp": [
+      0.0,
+      0.00048828125,
+      0.00048828125,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "decile_mpiw": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "nonfinite": false
+  },
+  "val": {
+    "mse": 2.3136406070989324e-06,
+    "picp": 9.765625e-05,
+    "mpiw": 0.0,
+    "nll": 107.39063262939453,
+    "interval_score": 0.017062636092305183,
+    "n_samples": 500,
+    "decile_picp": [
+      0.0,
+      0.00048828125,
+      0.00048828125,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "decile_mpiw": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "nonfinite": false
+  },
+  "unc_ref": null,
+  "unc_ref_n": null,
+  "stopped_early": false,
+  "iterations_run": 200000,
+  "selection_metric": "mse",
+  "finished": "2026-09-23 15:56:47"
+}

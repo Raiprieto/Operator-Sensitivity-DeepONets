@@ -28,6 +28,7 @@ data/
 *.tsv
 *.mat
 *.dat
+!models/**/*.npz
 
 # Logs and text files
 *.txt

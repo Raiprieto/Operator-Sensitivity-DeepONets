@@ -1,0 +1,40 @@
+{
+  "mse": 0.001183958724141121,
+  "picp": 9.765625e-05,
+  "mpiw": 0.0,
+  "nll": 59189.640625,
+  "interval_score": 0.4443904161453247,
+  "n_samples": 500,
+  "decile_picp": [
+    0.00048828125,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.00048828125
+  ],
+  "decile_mpiw": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "nonfinite": false,
+  "rho_err_spearman": NaN,
+  "rho_err_pearson": NaN,
+  "params": 183801,
+  "commit_eval": "92c4d82bcb4ccb9f68d5b37fef62c33db938df10",
+  "dataset": "ood_shape_amp2.h5",
+  "data_md5": "eefce5b63aacafab5bdca6bf7ceaa04a",
+  "batch_invariance_rel_drift": 4.0027022242716055e-07
+}

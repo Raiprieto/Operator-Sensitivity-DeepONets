@@ -1,0 +1,269 @@
+{
+  "status": "completed",
+  "benchmark": "ns2d_n20k_baselines",
+  "model": "vanilla",
+  "lambda": 4.0,
+  "seed": 2,
+  "smoke": false,
+  "commit": "2d12f5a352632f091272143cb04657f4c16506c3",
+  "config": {
+    "benchmark": "ns2d_n20k_baselines",
+    "description": "EXPERIMENTO (NS2D, train de 20000): baselines con la MISMA arquitectura chica, datos, lambda y semilla que el Jacobian de ns2d_n20k. Escalera de ablacion del ancho: constante -> espacial (quantile_x) -> condicionado en la muestra (quantile_ux) -> Jacobian.",
+    "data_from": "ns2d_n20k",
+    "model": {
+      "branch": [
+        1026,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "trunk": [
+        2,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "activation": "swish",
+      "sigma": {
+        "jacobian": 0.05,
+        "vanilla": 0.025
+      }
+    },
+    "train": {
+      "optimizer": "adam",
+      "iterations": 200000,
+      "display_every": 1000,
+      "val_every": 5000,
+      "val_infer_batch": 50,
+      "unc_ref_subset": 1024,
+      "selection_metric": "interval_score",
+      "patience": 8,
+      "min_select_step": 0,
+      "batch_size": 128,
+      "learning_rate": 0.001,
+      "decay_rate": 0.7,
+      "decay_steps": 50000
+    },
+    "sweep": {
+      "models": [
+        "vanilla",
+        "quantile_x",
+        "quantile_ux"
+      ],
+      "lambdas": [
+        4
+      ],
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "note": "Estudio formal NS2D con el modelo chico (5x100 + entrada 32x32), train de 20000, lambda=4, tres semillas. Comparacion Jacobian vs baselines sobre el mismo test."
+    },
+    "source": "Derivada de ns2d_n20k.json; solo cambia el barrido de modelos.",
+    "input_transform": {
+      "type": "grid_stride",
+      "grid": [
+        64,
+        64
+      ],
+      "stride": 2
+    },
+    "_smoke": false,
+    "data": {
+      "append_params": true,
+      "splits": {
+        "train": {
+          "generator": "ns2d",
+          "n": 20000,
+          "seed": 4000000,
+          "jacobian": false
+        },
+        "val": {
+          "generator": "ns2d",
+          "n": 500,
+          "seed": 2000000,
+          "jacobian": false
+        },
+        "test": {
+          "generator": "ns2d",
+          "n": 500,
+          "seed": 1000000,
+          "jacobian": true
+        }
+      },
+      "generator_args": {
+        "nx": 64,
+        "T": 0.5,
+        "batch_size": 20
+      }
+    },
+    "ood": {
+      "mu_low": {
+        "generator": "ns2d",
+        "n": 500,
+        "seed": 5000000,
+        "jacobian": true,
+        "gen_overrides": {
+          "mu_min": 0.0005,
+          "mu_max": 0.001
+        },
+        "note": "Viscosidad por debajo del rango de entrenamiento [0.001, 0.01]. OOD leve en un parametro de entrada."
+      },
+      "gamma_high": {
+        "generator": "ns2d",
+        "n": 500,
+        "seed": 6000000,
+        "jacobian": true,
+        "gen_overrides": {
+          "gamma_min": 2.0,
+          "gamma_max": 2.2
+        },
+        "note": "Gamma por encima del rango de entrenamiento [1.2, 2.0]. OOD leve en el parametro cuya sensibilidad se mide."
+      },
+      "far_params": {
+        "generator": "ns2d",
+        "n": 500,
+        "seed": 7000000,
+        "jacobian": false,
+        "gen_overrides": {
+          "mu_min": 0.0001,
+          "mu_max": 0.0005,
+          "gamma_min": 2.2,
+          "gamma_max": 2.6
+        },
+        "note": "OOD fuerte en parametros: mu 10x bajo el minimo de train y gamma bien sobre el maximo."
+      },
+      "shape_amp2": {
+        "generator": "ns2d",
+        "n": 500,
+        "seed": 8000000,
+        "jacobian": false,
+        "gen_overrides": {
+          "amp_scale": 2.0
+        },
+        "note": "OOD de FORMA: parametros dentro de rango, condiciones iniciales con el doble de amplitud espectral (estructuras mas abruptas). No esta codificado en ningun parametro escalar de entrada."
+      }
+    },
+    "_config_md5": "e2fc2d5450f295f8bd05f46d091175aa",
+    "_data_benchmark": "ns2d_n20k",
+    "_data_config_md5": "abfac45016bf26c04b0070665a553179"
+  },
+  "data_md5": {
+    "train": "3b3d7c812a907003156aef7662b25a78",
+    "val": "b61beae952ac0d1a85988a1bd1a421d7",
+    "test": "7d061a143dee1ecb61225af6dace1313"
+  },
+  "sigma": 0.025,
+  "architecture": {
+    "branch": [
+      1026,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.05,
+      "vanilla": 0.025
+    }
+  },
+  "slurm_job": "912788",
+  "slurm_array_task": "2",
+  "host": "compute-gpu-2-8.mansci.uai.cl",
+  "started": "2026-09-23 11:15:14",
+  "versions": {
+    "python": "3.9.25",
+    "torch": "2.8.0+cu128",
+    "deepxde": "1.15.0",
+    "gpu": "NVIDIA A30 MIG 1g.6gb"
+  },
+  "train_seconds": 1114.0,
+  "best_step": 180000,
+  "best_val_subset_ref": {
+    "mse": 0.0012592204147949815,
+    "picp": 86.245654296875,
+    "mpiw": 0.09076488018035889,
+    "nll": -1.8441468477249146,
+    "interval_score": 0.1706620752811432,
+    "n_samples": 500,
+    "decile_picp": [
+      99.9619140625,
+      99.68359375,
+      98.455078125,
+      96.4619140625,
+      93.9189453125,
+      89.31787109375,
+      83.6875,
+      77.4052734375,
+      69.14013671875,
+      54.42431640625
+    ],
+    "decile_mpiw": [
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948
+    ],
+    "nonfinite": false
+  },
+  "val": {
+    "mse": 0.0012592204147949815,
+    "picp": 86.245654296875,
+    "mpiw": 0.09076488018035889,
+    "nll": -1.8441468477249146,
+    "interval_score": 0.1706620752811432,
+    "n_samples": 500,
+    "decile_picp": [
+      99.9619140625,
+      99.68359375,
+      98.455078125,
+      96.4619140625,
+      93.9189453125,
+      89.31787109375,
+      83.6875,
+      77.4052734375,
+      69.14013671875,
+      54.42431640625
+    ],
+    "decile_mpiw": [
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948,
+      0.09076488763093948
+    ],
+    "nonfinite": false
+  },
+  "unc_ref": null,
+  "unc_ref_n": null,
+  "stopped_early": false,
+  "iterations_run": 200000,
+  "selection_metric": "interval_score",
+  "finished": "2026-09-23 11:33:53"
+}

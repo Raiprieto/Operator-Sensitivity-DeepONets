@@ -1,0 +1,40 @@
+{
+  "commit_eval": "48793ae9b2c86b115e059c6185d2820cb92b2120",
+  "commit_train": "17fb30cbf866e403bcb8fde4315b83542dac10e2",
+  "test_md5": "bcc55830ac24cd0521e373d61a4f1aaf",
+  "batch_invariance_rel_drift": 1.3135637573213899e-06,
+  "test": {
+    "mse": 0.0015284947585314512,
+    "picp": 9.375e-05,
+    "mpiw": 0.0,
+    "nll": 76416.4453125,
+    "interval_score": 0.25398871302604675,
+    "n_samples": 500,
+    "decile_picp": [
+      0.00015625,
+      0.0,
+      0.0,
+      0.0,
+      0.0003125,
+      0.00015625,
+      0.0,
+      0.00015625,
+      0.0,
+      0.00015625
+    ],
+    "decile_mpiw": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "nonfinite": false
+  },
+  "test_legacy_batchmean": null
+}

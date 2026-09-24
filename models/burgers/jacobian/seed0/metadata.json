@@ -1,0 +1,216 @@
+{
+  "status": "completed",
+  "benchmark": "burgers",
+  "model": "jacobian",
+  "lambda": 4.0,
+  "seed": 0,
+  "smoke": false,
+  "commit": "48793ae9b2c86b115e059c6185d2820cb92b2120",
+  "config": {
+    "benchmark": "burgers",
+    "description": "1D viscous Burgers. Entrada: u0 (128) + nu. Salida: u(x,t) en 128x100.",
+    "data": {
+      "append_params": true,
+      "splits": {
+        "train": {
+          "generator": "burgers",
+          "n": 15000,
+          "seed": 3000000,
+          "jacobian": false
+        },
+        "val": {
+          "generator": "burgers",
+          "n": 500,
+          "seed": 2000000,
+          "jacobian": false
+        },
+        "test": {
+          "generator": "burgers",
+          "n": 500,
+          "seed": 1000000,
+          "jacobian": true
+        }
+      },
+      "generator_args": {
+        "nx": 128,
+        "nt": 100,
+        "L": 1.0,
+        "T": 1.0,
+        "nu_min": 0.001,
+        "nu_max": 0.1,
+        "batch_size": 100
+      },
+      "notes": "nu ~ U(0.001, 0.1): es el rango de los datos del paper (el texto dice 0.01; corregir el paper)."
+    },
+    "model": {
+      "branch": [
+        129,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "trunk": [
+        2,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "activation": "swish",
+      "sigma": {
+        "jacobian": 0.025,
+        "vanilla": 0.025
+      }
+    },
+    "train": {
+      "optimizer": "adam",
+      "iterations": 200000,
+      "display_every": 1000,
+      "val_every": 5000,
+      "val_infer_batch": 50,
+      "unc_ref_subset": 1024,
+      "selection_metric": "interval_score",
+      "patience": null,
+      "min_select_step": 0,
+      "batch_size": 128,
+      "learning_rate": 0.001,
+      "decay_rate": 0.7,
+      "decay_steps": 50000
+    },
+    "sweep": {
+      "models": [
+        "jacobian"
+      ],
+      "lambdas": [
+        4
+      ],
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "note": "Piloto: solo Jacobian con lambda=4, en A100 (decision del 2026-09-21). Ampliar aqui para el barrido completo."
+    },
+    "source": "scripts/burger/burgers_lambda_sweep.sh (vanilla con la misma arquitectura de 10 capas que evalua el paper)",
+    "_smoke": false,
+    "_config_md5": "5eb1d786cf42bb7f7d2d9f1a63b335b8",
+    "_data_benchmark": "burgers",
+    "_data_config_md5": "97a03a719edabe86853e2ae84bdbfcab"
+  },
+  "data_md5": {
+    "train": "314cace0bf17b565bacafeae5cace686",
+    "val": "a4ba02d5eb411835f415fed2626e5bf8",
+    "test": "bcc55830ac24cd0521e373d61a4f1aaf"
+  },
+  "sigma": 0.025,
+  "architecture": {
+    "branch": [
+      129,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "slurm_job": "916243",
+  "slurm_array_task": "0",
+  "host": "compute-gpu-2-9.mansci.uai.cl",
+  "started": "2026-09-24 02:37:12",
+  "versions": {
+    "python": "3.9.25",
+    "torch": "2.8.0+cu128",
+    "deepxde": "1.15.0",
+    "gpu": "NVIDIA A100 80GB PCIe"
+  },
+  "train_seconds": 3454.2,
+  "best_step": 185000,
+  "best_val_subset_ref": {
+    "mse": 0.001191820134408772,
+    "picp": 94.592875,
+    "mpiw": 0.041609734296798706,
+    "nll": -3.930510997772217,
+    "interval_score": 0.06087639927864075,
+    "n_samples": 500,
+    "decile_picp": [
+      99.36203125,
+      98.92734375,
+      97.20921875,
+      97.18765625,
+      94.9609375,
+      95.04359375,
+      94.09265625,
+      94.1121875,
+      91.6559375,
+      83.3771875
+    ],
+    "decile_mpiw": [
+      0.01663094013929367,
+      0.01973511092364788,
+      0.021609805524349213,
+      0.022376513108611107,
+      0.02182699739933014,
+      0.02631036937236786,
+      0.027329957112669945,
+      0.039817795157432556,
+      0.06710214912891388,
+      0.15335768461227417
+    ],
+    "nonfinite": false
+  },
+  "val": {
+    "mse": 0.001191820134408772,
+    "picp": 94.1665625,
+    "mpiw": 0.04081924259662628,
+    "nll": -3.9386773109436035,
+    "interval_score": 0.06081531569361687,
+    "n_samples": 500,
+    "decile_picp": [
+      99.22640625,
+      98.7471875,
+      96.87078125,
+      96.83015625,
+      94.45,
+      94.54578125,
+      93.59046875,
+      93.58078125,
+      91.09078125,
+      82.73328125
+    ],
+    "decile_mpiw": [
+      0.016210319474339485,
+      0.019244994968175888,
+      0.02107778564095497,
+      0.021829865872859955,
+      0.021296126767992973,
+      0.025680802762508392,
+      0.026686765253543854,
+      0.038942381739616394,
+      0.06583761423826218,
+      0.15138579905033112
+    ],
+    "nonfinite": false
+  },
+  "unc_ref": 0.04746444122998988,
+  "unc_ref_n": 15000,
+  "stopped_early": false,
+  "iterations_run": 200000,
+  "selection_metric": "interval_score",
+  "finished": "2026-09-24 03:34:53"
+}

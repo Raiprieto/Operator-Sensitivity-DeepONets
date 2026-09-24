@@ -1,0 +1,19 @@
+{
+  "model": "jacobian",
+  "lambda": 4.0,
+  "seed": 1,
+  "mse": 3.5475716231303522e-06,
+  "sigma_ref_norm": 0.863910760256606,
+  "sigma_batch_rel_drift": 1.2369899955311315e-08,
+  "rho_err": {
+    "phys": 0.6185128410759474,
+    "norm": 0.49743135611726325,
+    "band_proxy": 0.6138339048894741,
+    "ystd": 0.42635641966272536
+  },
+  "selftest_rho_width_vs_band_proxy": 0.9999999661534384,
+  "rho_err_width": 0.6138163385571653,
+  "commit_eval": "5de8ed2f0db5c8a0ebc6f17b044a511538cb6e93",
+  "dataset": "test.h5",
+  "data_md5": "06c882677a5b7aff3ffccfc14c401a92"
+}

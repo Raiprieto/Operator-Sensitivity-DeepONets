@@ -1,0 +1,33 @@
+{
+  "benchmark": "darcy_small",
+  "smoke": false,
+  "selection": "lambda con menor interval score medio en validacion",
+  "selected_lambda": {
+    "jacobian": 4.0
+  },
+  "rows": [
+    {
+      "model": "jacobian",
+      "lambda": 4.0,
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "val_interval_score": 0.005818291567265987,
+      "test_mse_mean": 3.0374871281916662e-06,
+      "test_mse_std": 4.4174518775973467e-07,
+      "test_picp_mean": 83.22470703124999,
+      "test_picp_std": 0.811677053443506,
+      "test_mpiw_mean": 0.002731111211081346,
+      "test_mpiw_std": 0.00014039392880710737,
+      "test_nll_mean": -5.456257025400798,
+      "test_nll_std": 0.10603004459070285,
+      "test_interval_score_mean": 0.006206626848628123,
+      "test_interval_score_std": 0.0002494884195054748,
+      "test_picp_legacy_batchmean_mean": 82.97516276041667,
+      "selected_by_val": true
+    }
+  ]
+}

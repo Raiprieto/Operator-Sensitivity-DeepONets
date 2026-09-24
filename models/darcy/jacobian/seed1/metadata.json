@@ -1,0 +1,219 @@
+{
+  "status": "completed",
+  "benchmark": "darcy_small",
+  "model": "jacobian",
+  "lambda": 4.0,
+  "seed": 1,
+  "smoke": false,
+  "commit": "7e4273faf922866ae984be3556454d06ea814692",
+  "config": {
+    "benchmark": "darcy_small",
+    "description": "EXPERIMENTO (Darcy): misma compactacion que en NS2D. Arquitectura chica 5x100 y entrada submuestreada 32x32 (stride 2 sobre la permeabilidad 64x64), en vez del branch 4x256 sobre 4096 entradas. Una semilla y lambda=4 como prueba inicial. Datos de darcy.json.",
+    "data_from": "darcy",
+    "model": {
+      "branch": [
+        1024,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "trunk": [
+        2,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "activation": "swish",
+      "sigma": {
+        "jacobian": 0.025,
+        "vanilla": 0.025
+      }
+    },
+    "train": {
+      "optimizer": "adam",
+      "iterations": 200000,
+      "display_every": 1000,
+      "val_every": 5000,
+      "val_infer_batch": 50,
+      "unc_ref_subset": 1024,
+      "selection_metric": "interval_score",
+      "patience": 8,
+      "min_select_step": 0,
+      "batch_size": 128,
+      "learning_rate": 0.001,
+      "decay_rate": 0.7,
+      "decay_steps": 50000
+    },
+    "sweep": {
+      "models": [
+        "jacobian"
+      ],
+      "lambdas": [
+        4
+      ],
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "note": "Estudio formal Darcy con el modelo chico (5x100, entrada 32x32), lambda=4, tres semillas."
+    },
+    "source": "Derivada de darcy.json (datos y sigma) y ns2d_n20k.json (arquitectura chica y receta de entrenamiento).",
+    "input_transform": {
+      "type": "grid_stride",
+      "grid": [
+        64,
+        64
+      ],
+      "stride": 2
+    },
+    "_smoke": false,
+    "data": {
+      "append_params": true,
+      "splits": {
+        "train": {
+          "generator": "darcy",
+          "n": 10000,
+          "seed": 3000000,
+          "jacobian": false
+        },
+        "val": {
+          "generator": "darcy",
+          "n": 500,
+          "seed": 2000000,
+          "jacobian": false
+        },
+        "test": {
+          "generator": "darcy",
+          "n": 1000,
+          "seed": 1000000,
+          "jacobian": false
+        }
+      },
+      "generator_args": {
+        "N": 64,
+        "batch_size": 20
+      }
+    },
+    "_config_md5": "a747bfade4a2cd51a1f9aaea57caa584",
+    "_data_benchmark": "darcy",
+    "_data_config_md5": "bbcd7d4cb858361ae0059601b494d3f1"
+  },
+  "data_md5": {
+    "train": "18d05615a99e41ce972484a025350d3f",
+    "val": "a5630c9340d237758babe92863b615b1",
+    "test": "06c882677a5b7aff3ffccfc14c401a92"
+  },
+  "sigma": 0.025,
+  "architecture": {
+    "branch": [
+      1024,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "slurm_job": "914672",
+  "slurm_array_task": "1",
+  "host": "compute-gpu-2-8.mansci.uai.cl",
+  "started": "2026-09-23 14:58:01",
+  "versions": {
+    "python": "3.9.25",
+    "torch": "2.8.0+cu128",
+    "deepxde": "1.15.0",
+    "gpu": "NVIDIA A30 MIG 1g.6gb"
+  },
+  "train_seconds": 9234.9,
+  "best_step": 195000,
+  "best_val_subset_ref": {
+    "mse": 2.5188489871652564e-06,
+    "picp": 83.293408203125,
+    "mpiw": 0.002653789706528187,
+    "nll": -5.522695541381836,
+    "interval_score": 0.005871563218533993,
+    "n_samples": 500,
+    "decile_picp": [
+      97.09814453125,
+      94.42822265625,
+      91.58642578125,
+      89.41552734375,
+      86.61767578125,
+      83.21826171875,
+      79.87890625,
+      77.41064453125,
+      73.3193359375,
+      59.9609375
+    ],
+    "decile_mpiw": [
+      0.0019296797690913081,
+      0.002017507329583168,
+      0.0020710628014057875,
+      0.0021999976597726345,
+      0.0023615648970007896,
+      0.0025365983601659536,
+      0.0027339288499206305,
+      0.0030216907616704702,
+      0.0034107472747564316,
+      0.00425511971116066
+    ],
+    "nonfinite": false
+  },
+  "val": {
+    "mse": 2.5188489871652564e-06,
+    "picp": 83.207080078125,
+    "mpiw": 0.00264757894910872,
+    "nll": -5.521054267883301,
+    "interval_score": 0.005876908078789711,
+    "n_samples": 500,
+    "decile_picp": [
+      97.0654296875,
+      94.36279296875,
+      91.49658203125,
+      89.34228515625,
+      86.51220703125,
+      83.1123046875,
+      79.78076171875,
+      77.29833984375,
+      73.22802734375,
+      59.8720703125
+    ],
+    "decile_mpiw": [
+      0.0019246360752731562,
+      0.0020122944843024015,
+      0.002065749140456319,
+      0.0021944520995020866,
+      0.002355748787522316,
+      0.0025304818991571665,
+      0.002727497136220336,
+      0.0030148348305374384,
+      0.003403344424441457,
+      0.004246750846505165
+    ],
+    "nonfinite": false
+  },
+  "unc_ref": 0.02154572502283926,
+  "unc_ref_n": 10000,
+  "stopped_early": false,
+  "iterations_run": 200000,
+  "selection_metric": "interval_score",
+  "finished": "2026-09-23 17:32:01"
+}

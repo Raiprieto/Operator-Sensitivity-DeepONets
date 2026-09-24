@@ -1,0 +1,17 @@
+{
+  "model": "mse",
+  "lambda": 0.0,
+  "seed": 1,
+  "mse": 3.0618587061326252e-06,
+  "sigma_ref_norm": 0.7577294859992955,
+  "sigma_batch_rel_drift": 1.3274594788826012e-08,
+  "rho_err": {
+    "phys": 0.4079711293168152,
+    "norm": 0.27037576652179296,
+    "band_proxy": 0.41478976049717364,
+    "ystd": 0.4237113466449105
+  },
+  "commit_eval": "5de8ed2f0db5c8a0ebc6f17b044a511538cb6e93",
+  "dataset": "test.h5",
+  "data_md5": "06c882677a5b7aff3ffccfc14c401a92"
+}

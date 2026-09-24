@@ -1,0 +1,221 @@
+{
+  "status": "completed",
+  "benchmark": "darcy_small_baselines",
+  "model": "quantile_ux",
+  "lambda": 4.0,
+  "seed": 2,
+  "smoke": false,
+  "commit": "7e4273faf922866ae984be3556454d06ea814692",
+  "config": {
+    "benchmark": "darcy_small_baselines",
+    "description": "EXPERIMENTO (Darcy): baselines con la MISMA arquitectura chica, datos, lambda y semilla que el Jacobian de darcy_small. Escalera de ablacion del ancho: constante (vanilla) -> espacial (quantile_x) -> condicionado en la muestra (quantile_ux).",
+    "data_from": "darcy",
+    "model": {
+      "branch": [
+        1024,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "trunk": [
+        2,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "activation": "swish",
+      "sigma": {
+        "jacobian": 0.025,
+        "vanilla": 0.025
+      }
+    },
+    "train": {
+      "optimizer": "adam",
+      "iterations": 200000,
+      "display_every": 1000,
+      "val_every": 5000,
+      "val_infer_batch": 50,
+      "unc_ref_subset": 1024,
+      "selection_metric": "interval_score",
+      "patience": 8,
+      "min_select_step": 0,
+      "batch_size": 128,
+      "learning_rate": 0.001,
+      "decay_rate": 0.7,
+      "decay_steps": 50000
+    },
+    "sweep": {
+      "models": [
+        "vanilla",
+        "quantile_x",
+        "quantile_ux"
+      ],
+      "lambdas": [
+        4
+      ],
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "note": "Estudio formal Darcy con el modelo chico (5x100, entrada 32x32), lambda=4, tres semillas. Mismo test que darcy_small."
+    },
+    "source": "Derivada de darcy_small.json; solo cambia el barrido de modelos.",
+    "input_transform": {
+      "type": "grid_stride",
+      "grid": [
+        64,
+        64
+      ],
+      "stride": 2
+    },
+    "_smoke": false,
+    "data": {
+      "append_params": true,
+      "splits": {
+        "train": {
+          "generator": "darcy",
+          "n": 10000,
+          "seed": 3000000,
+          "jacobian": false
+        },
+        "val": {
+          "generator": "darcy",
+          "n": 500,
+          "seed": 2000000,
+          "jacobian": false
+        },
+        "test": {
+          "generator": "darcy",
+          "n": 1000,
+          "seed": 1000000,
+          "jacobian": false
+        }
+      },
+      "generator_args": {
+        "N": 64,
+        "batch_size": 20
+      }
+    },
+    "_config_md5": "6f0b64ed087f281e0217338b109a92e1",
+    "_data_benchmark": "darcy",
+    "_data_config_md5": "bbcd7d4cb858361ae0059601b494d3f1"
+  },
+  "data_md5": {
+    "train": "18d05615a99e41ce972484a025350d3f",
+    "val": "a5630c9340d237758babe92863b615b1",
+    "test": "06c882677a5b7aff3ffccfc14c401a92"
+  },
+  "sigma": null,
+  "architecture": {
+    "branch": [
+      1024,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "slurm_job": "914667",
+  "slurm_array_task": "8",
+  "host": "compute-gpu-2-8.mansci.uai.cl",
+  "started": "2026-09-23 15:13:33",
+  "versions": {
+    "python": "3.9.25",
+    "torch": "2.8.0+cu128",
+    "deepxde": "1.15.0",
+    "gpu": "NVIDIA A30 MIG 1g.6gb"
+  },
+  "train_seconds": 1173.2,
+  "best_step": 195000,
+  "best_val_subset_ref": {
+    "mse": 2.1711648514610715e-06,
+    "picp": 81.99521484375,
+    "mpiw": 0.002377529628574848,
+    "nll": -5.749512672424316,
+    "interval_score": 0.004965249449014664,
+    "n_samples": 500,
+    "decile_picp": [
+      92.69970703125,
+      89.650390625,
+      87.8466796875,
+      87.00830078125,
+      85.33837890625,
+      82.11083984375,
+      80.0830078125,
+      76.52392578125,
+      71.79638671875,
+      66.89453125
+    ],
+    "decile_mpiw": [
+      0.0011340519413352013,
+      0.00141050573438406,
+      0.0016133110038936138,
+      0.0018331105820834637,
+      0.0020709296222776175,
+      0.0023232444655150175,
+      0.0026018547359853983,
+      0.0028293621726334095,
+      0.0032198154367506504,
+      0.004739109426736832
+    ],
+    "nonfinite": false
+  },
+  "val": {
+    "mse": 2.1711648514610715e-06,
+    "picp": 81.99521484375,
+    "mpiw": 0.002377529628574848,
+    "nll": -5.749512672424316,
+    "interval_score": 0.004965249449014664,
+    "n_samples": 500,
+    "decile_picp": [
+      92.69970703125,
+      89.650390625,
+      87.8466796875,
+      87.00830078125,
+      85.33837890625,
+      82.11083984375,
+      80.0830078125,
+      76.52392578125,
+      71.79638671875,
+      66.89453125
+    ],
+    "decile_mpiw": [
+      0.0011340519413352013,
+      0.00141050573438406,
+      0.0016133110038936138,
+      0.0018331105820834637,
+      0.0020709296222776175,
+      0.0023232444655150175,
+      0.0026018547359853983,
+      0.0028293621726334095,
+      0.0032198154367506504,
+      0.004739109426736832
+    ],
+    "nonfinite": false
+  },
+  "unc_ref": null,
+  "unc_ref_n": null,
+  "stopped_early": false,
+  "iterations_run": 200000,
+  "selection_metric": "interval_score",
+  "finished": "2026-09-23 15:33:09"
+}

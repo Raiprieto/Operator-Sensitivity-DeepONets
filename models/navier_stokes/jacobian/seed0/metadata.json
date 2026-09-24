@@ -1,0 +1,217 @@
+{
+  "status": "completed",
+  "benchmark": "ns2d_n20k",
+  "model": "jacobian",
+  "lambda": 4.0,
+  "seed": 0,
+  "smoke": false,
+  "commit": "c78404fe78b1e8eb0316502cd13ccdc060ace989",
+  "config": {
+    "benchmark": "ns2d_n20k",
+    "description": "EXPERIMENTO (NS2D): mismo generador y distribucion que ns2d, pero train de 20000 muestras con semilla propia. Val y test usan las mismas semillas que ns2d, asi que son identicos (se verifica por md5). Arquitectura chica 5x100 + entrada 32x32.",
+    "data": {
+      "append_params": true,
+      "splits": {
+        "train": {
+          "generator": "ns2d",
+          "n": 20000,
+          "seed": 4000000,
+          "jacobian": false
+        },
+        "val": {
+          "generator": "ns2d",
+          "n": 500,
+          "seed": 2000000,
+          "jacobian": false
+        },
+        "test": {
+          "generator": "ns2d",
+          "n": 500,
+          "seed": 1000000,
+          "jacobian": true
+        }
+      },
+      "generator_args": {
+        "nx": 64,
+        "T": 0.5,
+        "batch_size": 20
+      }
+    },
+    "model": {
+      "branch": [
+        1026,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "trunk": [
+        2,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "activation": "swish",
+      "sigma": {
+        "jacobian": 0.05,
+        "vanilla": 0.025
+      }
+    },
+    "train": {
+      "optimizer": "adam",
+      "iterations": 200000,
+      "display_every": 1000,
+      "val_every": 5000,
+      "val_infer_batch": 50,
+      "unc_ref_subset": 1024,
+      "selection_metric": "interval_score",
+      "patience": 8,
+      "min_select_step": 0,
+      "batch_size": 128,
+      "learning_rate": 0.001,
+      "decay_rate": 0.7,
+      "decay_steps": 50000
+    },
+    "sweep": {
+      "models": [
+        "jacobian"
+      ],
+      "lambdas": [
+        4
+      ],
+      "seeds": [
+        0
+      ],
+      "note": "Curva de datos: comparar contra ns2d_exp_small_s32 (mismo modelo y lambda, train de 10000)."
+    },
+    "source": "Derivada de ns2d.json (datos) y ns2d_exp_small_s32.json (modelo).",
+    "input_transform": {
+      "type": "grid_stride",
+      "grid": [
+        64,
+        64
+      ],
+      "stride": 2
+    },
+    "_smoke": false,
+    "_config_md5": "961714dc40c5db28aa81f82aaeb1cc1c",
+    "_data_benchmark": "ns2d_n20k",
+    "_data_config_md5": "abfac45016bf26c04b0070665a553179"
+  },
+  "data_md5": {
+    "train": "3b3d7c812a907003156aef7662b25a78",
+    "val": "b61beae952ac0d1a85988a1bd1a421d7",
+    "test": "7d061a143dee1ecb61225af6dace1313"
+  },
+  "sigma": 0.05,
+  "architecture": {
+    "branch": [
+      1026,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.05,
+      "vanilla": 0.025
+    }
+  },
+  "slurm_job": "911947",
+  "slurm_array_task": "0",
+  "host": "compute-gpu-2-8.mansci.uai.cl",
+  "started": "2026-09-22 16:24:16",
+  "versions": {
+    "python": "3.9.25",
+    "torch": "2.8.0+cu128",
+    "deepxde": "1.15.0",
+    "gpu": "NVIDIA A30 MIG 1g.6gb"
+  },
+  "train_seconds": 9325.8,
+  "best_step": 195000,
+  "best_val_subset_ref": {
+    "mse": 0.0012015991378575563,
+    "picp": 88.882666015625,
+    "mpiw": 0.08899465948343277,
+    "nll": -2.3160390853881836,
+    "interval_score": 0.1183880865573883,
+    "n_samples": 500,
+    "decile_picp": [
+      93.64990234375,
+      90.328125,
+      89.17724609375,
+      89.6484375,
+      88.81201171875,
+      87.93896484375,
+      88.470703125,
+      88.54248046875,
+      87.2548828125,
+      85.00390625
+    ],
+    "decile_mpiw": [
+      0.0354057177901268,
+      0.044041067361831665,
+      0.05266040191054344,
+      0.06198680028319359,
+      0.07088440656661987,
+      0.08217655122280121,
+      0.09900107234716415,
+      0.11672581732273102,
+      0.1383068561553955,
+      0.18875783681869507
+    ],
+    "nonfinite": false
+  },
+  "val": {
+    "mse": 0.0012015991378575563,
+    "picp": 87.917919921875,
+    "mpiw": 0.08687655627727509,
+    "nll": -2.313342332839966,
+    "interval_score": 0.1187920868396759,
+    "n_samples": 500,
+    "decile_picp": [
+      92.8193359375,
+      89.28564453125,
+      88.154296875,
+      88.67236328125,
+      87.74560546875,
+      86.93896484375,
+      87.47314453125,
+      87.60693359375,
+      86.3212890625,
+      84.16162109375
+    ],
+    "decile_mpiw": [
+      0.03432316705584526,
+      0.04273657500743866,
+      0.051149625331163406,
+      0.06026449054479599,
+      0.06897585839033127,
+      0.08005023002624512,
+      0.09658786654472351,
+      0.1140432134270668,
+      0.13533994555473328,
+      0.18529467284679413
+    ],
+    "nonfinite": false
+  },
+  "unc_ref": 0.0629030087892927,
+  "unc_ref_n": 20000,
+  "stopped_early": false,
+  "iterations_run": 200000,
+  "selection_metric": "interval_score",
+  "finished": "2026-09-22 18:59:49"
+}

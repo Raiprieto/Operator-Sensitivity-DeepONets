@@ -1,0 +1,81 @@
+{
+  "benchmark": "ns2d_n20k_baselines",
+  "smoke": false,
+  "selection": "lambda con menor interval score medio en validacion",
+  "selected_lambda": {
+    "vanilla": 4.0,
+    "quantile_x": 4.0,
+    "quantile_ux": 4.0
+  },
+  "rows": [
+    {
+      "model": "quantile_ux",
+      "lambda": 4.0,
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "val_interval_score": 0.12026129166285197,
+      "test_mse_mean": 0.0010805327134827773,
+      "test_mse_std": 1.0633115479581348e-05,
+      "test_picp_mean": 87.47384440104167,
+      "test_picp_std": 0.13781866369786755,
+      "test_mpiw_mean": 0.08297412594159444,
+      "test_mpiw_std": 0.0007953509698948926,
+      "test_nll_mean": -2.3705061276753745,
+      "test_nll_std": 0.0065041848731088306,
+      "test_interval_score_mean": 0.11206499735514323,
+      "test_interval_score_std": 0.0006174263424081035,
+      "test_picp_legacy_batchmean_mean": null,
+      "selected_by_val": true
+    },
+    {
+      "model": "quantile_x",
+      "lambda": 4.0,
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "val_interval_score": 0.17180855572223663,
+      "test_mse_mean": 0.001139895214388768,
+      "test_mse_std": 6.334411060873166e-06,
+      "test_picp_mean": 87.84176432291667,
+      "test_picp_std": 0.11680771725277819,
+      "test_mpiw_mean": 0.09129670262336731,
+      "test_mpiw_std": 0.0002468900362867163,
+      "test_nll_mean": -1.9253729979197185,
+      "test_nll_std": 0.004794095957687596,
+      "test_interval_score_mean": 0.16166429221630096,
+      "test_interval_score_std": 0.0007325726720393631,
+      "test_picp_legacy_batchmean_mean": null,
+      "selected_by_val": true
+    },
+    {
+      "model": "vanilla",
+      "lambda": 4.0,
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "val_interval_score": 0.17121089001496634,
+      "test_mse_mean": 0.00114542447651426,
+      "test_mse_std": 1.4775055271876685e-05,
+      "test_picp_mean": 87.81077473958334,
+      "test_picp_std": 0.06698110653770768,
+      "test_mpiw_mean": 0.09101121624310811,
+      "test_mpiw_std": 0.00033696192947243656,
+      "test_nll_mean": -1.920299768447876,
+      "test_nll_std": 0.007881894467419315,
+      "test_interval_score_mean": 0.16200929880142212,
+      "test_interval_score_std": 0.0010092722111771897,
+      "test_picp_legacy_batchmean_mean": null,
+      "selected_by_val": true
+    }
+  ]
+}

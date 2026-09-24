@@ -1,0 +1,217 @@
+{
+  "status": "completed",
+  "benchmark": "burgers_mse",
+  "model": "mse",
+  "lambda": 0.0,
+  "seed": 0,
+  "smoke": false,
+  "commit": "17fb30cbf866e403bcb8fde4315b83542dac10e2",
+  "config": {
+    "benchmark": "burgers_mse",
+    "description": "EXPERIMENTO (Burgers): DeepONet determinista (MSE puro, sin bandas) con la MISMA arquitectura, datos y semillas que burgers. Base de los benchmarks Monte Carlo y del conformal condicionado por el jacobiano.",
+    "data_from": "burgers",
+    "model": {
+      "branch": [
+        129,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "trunk": [
+        2,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "activation": "swish",
+      "sigma": {
+        "jacobian": 0.025,
+        "vanilla": 0.025
+      }
+    },
+    "train": {
+      "optimizer": "adam",
+      "iterations": 200000,
+      "display_every": 1000,
+      "val_every": 5000,
+      "val_infer_batch": 50,
+      "unc_ref_subset": 1024,
+      "selection_metric": "mse",
+      "patience": null,
+      "min_select_step": 0,
+      "batch_size": 128,
+      "learning_rate": 0.001,
+      "decay_rate": 0.7,
+      "decay_steps": 50000
+    },
+    "sweep": {
+      "models": [
+        "mse"
+      ],
+      "lambdas": [
+        0
+      ],
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "note": "lambda=0: el determinista no usa pinball, la perdida es MSE puro."
+    },
+    "source": "Derivada de burgers.json: misma arquitectura, datos y receta; solo cambian el modelo, la perdida y la metrica de seleccion.",
+    "_smoke": false,
+    "data": {
+      "append_params": true,
+      "splits": {
+        "train": {
+          "generator": "burgers",
+          "n": 15000,
+          "seed": 3000000,
+          "jacobian": false
+        },
+        "val": {
+          "generator": "burgers",
+          "n": 500,
+          "seed": 2000000,
+          "jacobian": false
+        },
+        "test": {
+          "generator": "burgers",
+          "n": 500,
+          "seed": 1000000,
+          "jacobian": true
+        }
+      },
+      "generator_args": {
+        "nx": 128,
+        "nt": 100,
+        "L": 1.0,
+        "T": 1.0,
+        "nu_min": 0.001,
+        "nu_max": 0.1,
+        "batch_size": 100
+      },
+      "notes": "nu ~ U(0.001, 0.1): es el rango de los datos del paper (el texto dice 0.01; corregir el paper)."
+    },
+    "_config_md5": "e4d7ef2611604af21a201c851eac10bc",
+    "_data_benchmark": "burgers",
+    "_data_config_md5": "97a03a719edabe86853e2ae84bdbfcab"
+  },
+  "data_md5": {
+    "train": "314cace0bf17b565bacafeae5cace686",
+    "val": "a4ba02d5eb411835f415fed2626e5bf8",
+    "test": "bcc55830ac24cd0521e373d61a4f1aaf"
+  },
+  "sigma": null,
+  "architecture": {
+    "branch": [
+      129,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "slurm_job": "916230",
+  "slurm_array_task": "0",
+  "host": "compute-gpu-2-9.mansci.uai.cl",
+  "started": "2026-09-24 01:02:49",
+  "versions": {
+    "python": "3.9.25",
+    "torch": "2.8.0+cu128",
+    "deepxde": "1.15.0",
+    "gpu": "NVIDIA A100 80GB PCIe"
+  },
+  "train_seconds": 799.0,
+  "best_step": 200000,
+  "best_val_subset_ref": {
+    "mse": 0.0010176821378991008,
+    "picp": 4.6875e-05,
+    "mpiw": 0.0,
+    "nll": 50875.82421875,
+    "interval_score": 0.20882005989551544,
+    "n_samples": 500,
+    "decile_picp": [
+      0.00015625,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.00015625,
+      0.00015625,
+      0.0
+    ],
+    "decile_mpiw": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "nonfinite": false
+  },
+  "val": {
+    "mse": 0.0010176821378991008,
+    "picp": 4.6875e-05,
+    "mpiw": 0.0,
+    "nll": 50875.82421875,
+    "interval_score": 0.20882005989551544,
+    "n_samples": 500,
+    "decile_picp": [
+      0.00015625,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.00015625,
+      0.00015625,
+      0.0
+    ],
+    "decile_mpiw": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "nonfinite": false
+  },
+  "unc_ref": null,
+  "unc_ref_n": null,
+  "stopped_early": false,
+  "iterations_run": 200000,
+  "selection_metric": "mse",
+  "finished": "2026-09-24 01:16:13"
+}

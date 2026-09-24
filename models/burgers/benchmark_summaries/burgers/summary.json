@@ -1,0 +1,33 @@
+{
+  "benchmark": "burgers",
+  "smoke": false,
+  "selection": "lambda con menor interval score medio en validacion",
+  "selected_lambda": {
+    "jacobian": 4.0
+  },
+  "rows": [
+    {
+      "model": "jacobian",
+      "lambda": 4.0,
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "val_interval_score": 0.06007262940208117,
+      "test_mse_mean": 0.0017565844270090263,
+      "test_mse_std": 4.369489045465855e-05,
+      "test_picp_mean": 93.41565625,
+      "test_picp_std": 0.08734808799603087,
+      "test_mpiw_mean": 0.04792813832561175,
+      "test_mpiw_std": 0.0005960504565524792,
+      "test_nll_mean": -3.7560741106669107,
+      "test_nll_std": 0.008783611972467902,
+      "test_interval_score_mean": 0.07673114289840062,
+      "test_interval_score_std": 0.0012002850515409472,
+      "test_picp_legacy_batchmean_mean": 91.39896354166667,
+      "selected_by_val": true
+    }
+  ]
+}
