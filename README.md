@@ -33,6 +33,7 @@ The research introduces two complementary paradigms for physics-informed uncerta
 - [`benchmarks/`](benchmarks/README.md): Evaluation suite containing post-hoc conformal estimation (`posthoc_jacobian.py`), input noise propagation, Monte Carlo benchmarks, and latency profiling.
 - [`deepxde-extensions/`](deepxde-extensions/README.md): Custom neural operator architectures, including `JacobianDeepONetSoftplus`, `VanillaPinballDeepONet`, and spatial quantile heads.
 - [`src/`](src/README.md): Numerical PDE solvers, dataset generators with isolated seed tracking, and procedural model training routines.
+- [`examples/`](examples/README.md): Executable workflow bash scripts for data generation, multi-model training, and evaluation suites.
 
 ---
 
