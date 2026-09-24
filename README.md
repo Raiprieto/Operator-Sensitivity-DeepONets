@@ -22,7 +22,7 @@ The research introduces two complementary paradigms for physics-informed uncerta
 ### Method 2: Jacobian Conformal Bands (JCB) (Training-Free / Post-Hoc UQ)
 - **UQ for Free on Pretrained Operators:** Any pretrained Cartesian DeepONet (optimized purely for mean squared error) already contains a sensitivity geometry in its latent branch derivatives.
 - **Non-Parametric Conformal Scaling:** Extracts the pointwise sensitivity template $s(x)$ in one fused VJP pass, adds a relative floor $\beta \cdot \mathrm{median}(s)$ to ensure stability at Dirichlet boundaries, and fits a single scalar nonconformity multiplier $\hat{q}$ via split-conformal prediction on held-out calibration data:
-  $$y_{low/up}(x) = \mathcal{G}_\theta(u)(x) \mp \hat{q} \cdot \left( s(x) + \beta \operatorname{median}(s) \right)$$
+  $$y_{low/up}(x) = \mathcal{G}_\theta(u)(x) \mp \hat{q} \cdot \left( s(x) + \beta \, \mathrm{median}(s) \right)$$
 - **Zero Additional Weights:** Requires no gradient updates and adds zero trainable parameters. Recovers the physical sensitivity correlation ($\rho_{\mathrm{Sens}}$) and tightens prediction intervals compared to standard constant-width conformal prediction.
 
 ---
@@ -41,8 +41,8 @@ The research introduces two complementary paradigms for physics-informed uncerta
 A Python 3.9+ virtual environment is recommended:
 
 ```bash
-python -m venv env_tesis
-source env_tesis/bin/activate  # On Windows: env_tesis\Scripts\activate
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 

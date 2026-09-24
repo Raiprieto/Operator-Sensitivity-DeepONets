@@ -43,7 +43,7 @@ The protocol provides standalone modules for training-free uncertainty quantific
 - **`jacobian_conformal.py`**: Computes Jacobian Conformal Bands (JCB) on a frozen deterministic operator (trained with MSE alone). Compares four candidate band shapes under identical split-conformal calibration:
   - `const_phys`: Standard constant-width conformal band ($h = 1$).
   - `const_norm`: Constant width in normalized output space ($h = Y_{\mathrm{std}}$).
-  - `jac`: Jacobian sensitivity geometry ($h = Y_{\mathrm{std}} \cdot \sigma_{\mathrm{norm}} + \beta \operatorname{median}$).
+  - `jac`: Jacobian sensitivity geometry ($h = Y_{\mathrm{std}} \cdot \sigma_{\mathrm{norm}} + \beta \, \mathrm{median}$).
   - `jac_log`: Logarithmically compressed Jacobian shape ($h = Y_{\mathrm{std}} \cdot \log(1 + \sigma_{\mathrm{norm}} / \mathrm{ref})$).
 - **`jacobian_sigma.py`**: Evaluates whether the latent branch Jacobian of a frozen model already correlates with output error without any uncertainty training.
 - **`plot_quartiles.py`**: Generates error-quartile decomposition figures ($Q_1=25\%$, $Q_2=50\%$, $Q_3=75\%$, $Q_4=95\%$) across benchmarks for both trained Jacobian-DeepONet models and training-free JCB bands:
