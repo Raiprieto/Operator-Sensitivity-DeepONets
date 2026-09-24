@@ -1,0 +1,65 @@
+{
+  "benchmark": "ns2d_n20k_hybrid",
+  "description": "EXPERIMENTO (NS2D, 20000): hibrido jacobiano + cabezas con capacidad. La forma de la incertidumbre la fija ||J_branch|| y unas cabezas tipo quantile_ux aprenden una correccion multiplicativa, inicializada en 1 (identico al Jacobian en el paso 0).",
+  "data_from": "ns2d_n20k",
+  "model": {
+    "branch": [
+      1026,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.05,
+      "vanilla": 0.025,
+      "jacobian_quantile": 0.05
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 200000,
+    "display_every": 1000,
+    "val_every": 5000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "interval_score",
+    "patience": 8,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 50000
+  },
+  "sweep": {
+    "models": [
+      "jacobian_quantile"
+    ],
+    "lambdas": [
+      4
+    ],
+    "seeds": [
+      0
+    ],
+    "note": "Comparable con jacobian (ns2d_n20k) y con quantile_ux (ns2d_n20k_baselines): mismos datos, arquitectura, lambda y semilla."
+  },
+  "source": "Derivada de ns2d_n20k.json; solo cambia el barrido de modelos.",
+  "input_transform": {
+    "type": "grid_stride",
+    "grid": [
+      64,
+      64
+    ],
+    "stride": 2
+  }
+}

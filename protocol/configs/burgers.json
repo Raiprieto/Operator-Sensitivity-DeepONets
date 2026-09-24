@@ -1,0 +1,90 @@
+{
+  "benchmark": "burgers",
+  "description": "1D viscous Burgers. Entrada: u0 (128) + nu. Salida: u(x,t) en 128x100.",
+  "data": {
+    "append_params": true,
+    "splits": {
+      "train": {
+        "generator": "burgers",
+        "n": 15000,
+        "seed": 3000000,
+        "jacobian": false
+      },
+      "val": {
+        "generator": "burgers",
+        "n": 500,
+        "seed": 2000000,
+        "jacobian": false
+      },
+      "test": {
+        "generator": "burgers",
+        "n": 500,
+        "seed": 1000000,
+        "jacobian": true
+      }
+    },
+    "generator_args": {
+      "nx": 128,
+      "nt": 100,
+      "L": 1.0,
+      "T": 1.0,
+      "nu_min": 0.001,
+      "nu_max": 0.1,
+      "batch_size": 100
+    },
+    "notes": "nu ~ U(0.001, 0.1): es el rango de los datos del paper (el texto dice 0.01; corregir el paper)."
+  },
+  "model": {
+    "branch": [
+      129,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 200000,
+    "display_every": 1000,
+    "val_every": 5000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "interval_score",
+    "patience": null,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 50000
+  },
+  "sweep": {
+    "models": [
+      "jacobian"
+    ],
+    "lambdas": [
+      4
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "note": "Piloto: solo Jacobian con lambda=4, en A100 (decision del 2026-09-21). Ampliar aqui para el barrido completo."
+  },
+  "source": "scripts/burger/burgers_lambda_sweep.sh (vanilla con la misma arquitectura de 10 capas que evalua el paper)"
+}

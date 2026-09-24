@@ -1,0 +1,60 @@
+{
+  "benchmark": "burgers_baselines",
+  "description": "EXPERIMENTO (Burgers): baselines con la MISMA arquitectura, datos, lambda y semillas que el Jacobian de burgers. Escalera de ablacion del ancho: constante (vanilla) -> espacial (quantile_x) -> condicionado en la muestra (quantile_ux).",
+  "data_from": "burgers",
+  "model": {
+    "branch": [
+      129,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 200000,
+    "display_every": 1000,
+    "val_every": 5000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "interval_score",
+    "patience": null,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 50000
+  },
+  "sweep": {
+    "models": [
+      "vanilla",
+      "quantile_x",
+      "quantile_ux"
+    ],
+    "lambdas": [
+      4
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "note": "Mismo test que burgers. Completa la comparacion de disenos de UQ en el tercer benchmark."
+  },
+  "source": "Derivada de burgers.json: misma arquitectura, datos y receta; solo cambian el modelo, la perdida y la metrica de seleccion."
+}

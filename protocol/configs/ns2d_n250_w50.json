@@ -1,0 +1,65 @@
+{
+  "benchmark": "ns2d_n250_w50",
+  "description": "EXPERIMENTO (NS2D, pocos datos): igual que ns2d_n250 pero con capas de 50 neuronas (5x50, K=50) en branch y trunk. Mismos datos.",
+  "model": {
+    "branch": [
+      1026,
+      50,
+      50,
+      50,
+      50,
+      50
+    ],
+    "trunk": [
+      2,
+      50,
+      50,
+      50,
+      50,
+      50
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.05,
+      "vanilla": 0.025
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 60000,
+    "display_every": 1000,
+    "val_every": 1000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "interval_score",
+    "patience": 10,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 15000
+  },
+  "sweep": {
+    "models": [
+      "jacobian",
+      "quantile_ux"
+    ],
+    "lambdas": [
+      4
+    ],
+    "seeds": [
+      0
+    ],
+    "note": "Igual que ns2d_n250, con modelo de la mitad de ancho. K pasa de 100 a 50. Una semilla."
+  },
+  "source": "Derivada de ns2d_n250.json; solo cambia el ancho de las capas.",
+  "input_transform": {
+    "type": "grid_stride",
+    "grid": [
+      64,
+      64
+    ],
+    "stride": 2
+  },
+  "data_from": "ns2d_n250"
+}

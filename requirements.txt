@@ -1,0 +1,10 @@
+torch
+deepxde
+numpy
+matplotlib
+tqdm
+pandas
+scipy
+h5py
+jax
+jaxlib

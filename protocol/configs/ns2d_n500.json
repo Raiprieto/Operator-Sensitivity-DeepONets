@@ -1,0 +1,92 @@
+{
+  "benchmark": "ns2d_n500",
+  "description": "EXPERIMENTO (NS2D, pocos datos): mismo generador y semillas base que ns2d_n20k, pero con train de 500, val de 100 y test de 200 muestras (subconjuntos de las mismas semillas; NO son identicos a los val/test de ns2d_n20k). Arquitectura 5x100 + entrada 32x32. Piloto rapido para medir si el prior del Jacobian aguanta mejor que el quantile head cuando hay pocos datos.",
+  "data": {
+    "append_params": true,
+    "splits": {
+      "train": {
+        "generator": "ns2d",
+        "n": 500,
+        "seed": 4000000,
+        "jacobian": false
+      },
+      "val": {
+        "generator": "ns2d",
+        "n": 100,
+        "seed": 2000000,
+        "jacobian": false
+      },
+      "test": {
+        "generator": "ns2d",
+        "n": 200,
+        "seed": 1000000,
+        "jacobian": true
+      }
+    },
+    "generator_args": {
+      "nx": 64,
+      "T": 0.5,
+      "batch_size": 20
+    }
+  },
+  "model": {
+    "branch": [
+      1026,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.05,
+      "vanilla": 0.025
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 60000,
+    "display_every": 1000,
+    "val_every": 1000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "interval_score",
+    "patience": 10,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 15000
+  },
+  "sweep": {
+    "models": [
+      "jacobian",
+      "quantile_ux"
+    ],
+    "lambdas": [
+      4
+    ],
+    "seeds": [
+      0
+    ],
+    "note": "Piloto de escasez de datos: N=500, lambda=4, UNA semilla, Jacobian vs conditional quantile. Receta de ns2d_n20k salvo iterations 60000, val_every 1000, patience 10 y decay_steps 15000 (con pocos datos el mejor checkpoint aparece temprano y val_every=5000 lo saltaria). Val y test reducidos para rapidez: con test=200 el conformal calibra en 100 y mide en 100, asi que los MPIW son ruidosos."
+  },
+  "source": "Derivada de ns2d_n20k.json; cambian el tamano de train, el barrido de modelos y el calendario de entrenamiento. Sin conjuntos OOD.",
+  "input_transform": {
+    "type": "grid_stride",
+    "grid": [
+      64,
+      64
+    ],
+    "stride": 2
+  }
+}

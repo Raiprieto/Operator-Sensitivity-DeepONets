@@ -1,0 +1,66 @@
+{
+  "benchmark": "darcy_small",
+  "description": "EXPERIMENTO (Darcy): misma compactacion que en NS2D. Arquitectura chica 5x100 y entrada submuestreada 32x32 (stride 2 sobre la permeabilidad 64x64), en vez del branch 4x256 sobre 4096 entradas. Una semilla y lambda=4 como prueba inicial. Datos de darcy.json.",
+  "data_from": "darcy",
+  "model": {
+    "branch": [
+      1024,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 200000,
+    "display_every": 1000,
+    "val_every": 5000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "interval_score",
+    "patience": 8,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 50000
+  },
+  "sweep": {
+    "models": [
+      "jacobian"
+    ],
+    "lambdas": [
+      4
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "note": "Estudio formal Darcy con el modelo chico (5x100, entrada 32x32), lambda=4, tres semillas."
+  },
+  "source": "Derivada de darcy.json (datos y sigma) y ns2d_n20k.json (arquitectura chica y receta de entrenamiento).",
+  "input_transform": {
+    "type": "grid_stride",
+    "grid": [
+      64,
+      64
+    ],
+    "stride": 2
+  }
+}

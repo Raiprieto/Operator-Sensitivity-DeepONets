@@ -1,0 +1,60 @@
+{
+  "benchmark": "burgers_small_lambda",
+  "description": "EXPERIMENTO (Burgers): barrido de lambda con la arquitectura compacta 5x100 (K=100, entrada 129 sin submuestrear) sobre los mismos datos verificados de burgers.json. Reemplaza el barrido previo hecho con la arquitectura densa (scripts/burger/burgers_lambda_sweep.sh y burgers_vanilla_pinball_sweep.sh).",
+  "data_from": "burgers",
+  "model": {
+    "branch": [
+      129,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 200000,
+    "display_every": 1000,
+    "val_every": 5000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "interval_score",
+    "patience": null,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 50000
+  },
+  "sweep": {
+    "models": [
+      "jacobian",
+      "vanilla"
+    ],
+    "lambdas": [
+      1,
+      4,
+      8,
+      20
+    ],
+    "seeds": [
+      0
+    ],
+    "note": "Barrido de lambda con una semilla, igual que los de Darcy y la biarmonica. El punto lambda=4 con tres semillas vive en burgers.json y burgers_baselines.json."
+  },
+  "source": "Derivada de burgers.json; barre lambda en vez de semillas."
+}

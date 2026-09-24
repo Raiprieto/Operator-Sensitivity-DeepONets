@@ -1,0 +1,58 @@
+{
+  "benchmark": "burgers_mse",
+  "description": "EXPERIMENTO (Burgers): DeepONet determinista (MSE puro, sin bandas) con la MISMA arquitectura, datos y semillas que burgers. Base de los benchmarks Monte Carlo y del conformal condicionado por el jacobiano.",
+  "data_from": "burgers",
+  "model": {
+    "branch": [
+      129,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 200000,
+    "display_every": 1000,
+    "val_every": 5000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "mse",
+    "patience": null,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 50000
+  },
+  "sweep": {
+    "models": [
+      "mse"
+    ],
+    "lambdas": [
+      0
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "note": "lambda=0: el determinista no usa pinball, la perdida es MSE puro."
+  },
+  "source": "Derivada de burgers.json: misma arquitectura, datos y receta; solo cambian el modelo, la perdida y la metrica de seleccion."
+}

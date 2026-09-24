@@ -1,0 +1,68 @@
+{
+  "benchmark": "darcy_small_lambda",
+  "description": "EXPERIMENTO (Darcy): barrido de lambda con la arquitectura chica 5x100 y entrada 32x32, los mismos datos verificados de darcy.json. Reemplaza el barrido previo (darcy_lambda_sweep.sh / darcy_vanilla_pinball_sweep.sh) hecho con la arquitectura densa.",
+  "data_from": "darcy",
+  "model": {
+    "branch": [
+      1024,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.025,
+      "vanilla": 0.025
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 200000,
+    "display_every": 1000,
+    "val_every": 5000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "interval_score",
+    "patience": 8,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 50000
+  },
+  "sweep": {
+    "models": [
+      "jacobian",
+      "vanilla"
+    ],
+    "lambdas": [
+      1,
+      4,
+      8,
+      20
+    ],
+    "seeds": [
+      0
+    ],
+    "note": "Barrido de lambda con una semilla, como los sweeps del paper. El punto lambda=4 con tres semillas vive en los configs principales del benchmark."
+  },
+  "source": "Derivada de darcy_small.json; barre lambda en vez de semillas.",
+  "input_transform": {
+    "type": "grid_stride",
+    "grid": [
+      64,
+      64
+    ],
+    "stride": 2
+  }
+}

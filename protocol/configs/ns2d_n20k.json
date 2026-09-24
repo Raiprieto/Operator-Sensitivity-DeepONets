@@ -1,0 +1,140 @@
+{
+  "benchmark": "ns2d_n20k",
+  "description": "EXPERIMENTO (NS2D): mismo generador y distribucion que ns2d, pero train de 20000 muestras con semilla propia. Val y test usan las mismas semillas que ns2d, asi que son identicos (se verifica por md5). Arquitectura chica 5x100 + entrada 32x32.",
+  "data": {
+    "append_params": true,
+    "splits": {
+      "train": {
+        "generator": "ns2d",
+        "n": 20000,
+        "seed": 4000000,
+        "jacobian": false
+      },
+      "val": {
+        "generator": "ns2d",
+        "n": 500,
+        "seed": 2000000,
+        "jacobian": false
+      },
+      "test": {
+        "generator": "ns2d",
+        "n": 500,
+        "seed": 1000000,
+        "jacobian": true
+      }
+    },
+    "generator_args": {
+      "nx": 64,
+      "T": 0.5,
+      "batch_size": 20
+    }
+  },
+  "model": {
+    "branch": [
+      1026,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.05,
+      "vanilla": 0.025
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 200000,
+    "display_every": 1000,
+    "val_every": 5000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "interval_score",
+    "patience": 8,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 50000
+  },
+  "sweep": {
+    "models": [
+      "jacobian"
+    ],
+    "lambdas": [
+      4
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "note": "Estudio formal NS2D con el modelo chico (5x100 + entrada 32x32), train de 20000, lambda=4, tres semillas. Comparacion Jacobian vs baselines sobre el mismo test."
+  },
+  "source": "Derivada de ns2d.json (datos) y ns2d_exp_small_s32.json (modelo).",
+  "input_transform": {
+    "type": "grid_stride",
+    "grid": [
+      64,
+      64
+    ],
+    "stride": 2
+  },
+  "ood": {
+    "mu_low": {
+      "generator": "ns2d",
+      "n": 500,
+      "seed": 5000000,
+      "jacobian": true,
+      "gen_overrides": {
+        "mu_min": 0.0005,
+        "mu_max": 0.001
+      },
+      "note": "Viscosidad por debajo del rango de entrenamiento [0.001, 0.01]. OOD leve en un parametro de entrada."
+    },
+    "gamma_high": {
+      "generator": "ns2d",
+      "n": 500,
+      "seed": 6000000,
+      "jacobian": true,
+      "gen_overrides": {
+        "gamma_min": 2.0,
+        "gamma_max": 2.2
+      },
+      "note": "Gamma por encima del rango de entrenamiento [1.2, 2.0]. OOD leve en el parametro cuya sensibilidad se mide."
+    },
+    "far_params": {
+      "generator": "ns2d",
+      "n": 500,
+      "seed": 7000000,
+      "jacobian": false,
+      "gen_overrides": {
+        "mu_min": 0.0001,
+        "mu_max": 0.0005,
+        "gamma_min": 2.2,
+        "gamma_max": 2.6
+      },
+      "note": "OOD fuerte en parametros: mu 10x bajo el minimo de train y gamma bien sobre el maximo."
+    },
+    "shape_amp2": {
+      "generator": "ns2d",
+      "n": 500,
+      "seed": 8000000,
+      "jacobian": false,
+      "gen_overrides": {
+        "amp_scale": 2.0
+      },
+      "note": "OOD de FORMA: parametros dentro de rango, condiciones iniciales con el doble de amplitud espectral (estructuras mas abruptas). No esta codificado en ningun parametro escalar de entrada."
+    }
+  }
+}

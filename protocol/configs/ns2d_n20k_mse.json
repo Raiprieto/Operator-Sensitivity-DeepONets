@@ -1,0 +1,66 @@
+{
+  "benchmark": "ns2d_n20k_mse",
+  "description": "EXPERIMENTO (NS2D, train de 20000): DeepONet determinista (MSE puro, sin bandas) con la MISMA arquitectura chica, datos y semillas que ns2d_n20k. Es el modelo base de los benchmarks Monte Carlo y del metodo Delta, donde la incertidumbre se construye despues perturbando la entrada.",
+  "data_from": "ns2d_n20k",
+  "model": {
+    "branch": [
+      1026,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "trunk": [
+      2,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "activation": "swish",
+    "sigma": {
+      "jacobian": 0.05,
+      "vanilla": 0.025
+    }
+  },
+  "train": {
+    "optimizer": "adam",
+    "iterations": 200000,
+    "display_every": 1000,
+    "val_every": 5000,
+    "val_infer_batch": 50,
+    "unc_ref_subset": 1024,
+    "selection_metric": "mse",
+    "patience": 8,
+    "min_select_step": 0,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "decay_rate": 0.7,
+    "decay_steps": 50000
+  },
+  "sweep": {
+    "models": [
+      "mse"
+    ],
+    "lambdas": [
+      0
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "note": "lambda=0: el determinista no usa pinball, la perdida es MSE puro."
+  },
+  "source": "Derivada de ns2d_n20k_baselines.json; solo cambian el modelo, la perdida y la metrica de seleccion.",
+  "input_transform": {
+    "type": "grid_stride",
+    "grid": [
+      64,
+      64
+    ],
+    "stride": 2
+  }
+}
