@@ -1,61 +1,57 @@
 # Operator-Sensitivity-DeepONets
 
-Framework de aprendizaje de operadores neuronales con cuantificación analítica de incertidumbre (UQ) y análisis de sensibilidad física mediante **Jacobian-DeepONet**.
+Official repository for neural operator sensitivity analysis and analytical uncertainty quantification (UQ) using **Jacobian-DeepONet**.
 
-Este repositorio contiene la suite de código reproducible para el estudio de sensibilidad e incertidumbre en DeepONets para ecuaciones diferenciales parciales (EDPs), incluyendo:
-- **Ecuación de Burgers 1D** (frentes de choque advectivos y amortiguamiento viscoso)
-- **Flujo de Darcy 2D** (medios porosos con campos aleatorios gaussianos de permeabilidad)
-- **Navier-Stokes Compresible 2D** (operador flow-map sobre dinámicas hiperbólicas)
-- **Ecuación Biarmónica 2D** (operador elíptico de cuarto orden verificado por linealidad)
-
----
-
-## 1. Fundamentos Metodológicos
-
-1. **Prior físico espacial via Jacobiano:** En lugar de entrenar cabezas de incertidumbre con miles de parámetros o recurrir a costosos muestreos de Monte Carlo, se explota la norma del Jacobiano de la red como prior topológico de la incertidumbre.
-2. **Factorización Latente O(K):** Para DeepONets Cartesianas, la Trunk Net procesa exclusivamente coordenadas espaciales y se aísla de las entradas de la Branch Net. La varianza puntual exacta se calcula mediante la matriz de Gram latente, reduciendo la complejidad computacional y de memoria de forma drástica.
-3. **Calibración Asimétrica con Pinball Loss:** Se optimizan dos escalares independientes (w_lower, w_upper) bajo la función de pérdida Pinball al 90% (alpha = 0.10). Esta formulación actúa como una regularización Sobolev implícita: las derivadas de la red se alinean con la sensibilidad analítica del sistema sin requerir etiquetas de derivadas durante el entrenamiento.
-4. **Rescalado Split-Conformal:** Procedimiento post-hoc riguroso sobre conjuntos de calibración independientes para comparar anchos de intervalo bajo niveles idénticos de cobertura empírica.
+This repository provides a modular, reproducible research suite for sensitivity and uncertainty quantification in Deep Operator Networks (DeepONets) across four physical benchmark problems:
+- **1D Burgers Equation** (advective shock fronts, steep gradient formation, and viscous dissipation)
+- **2D Darcy Flow** (porous media with Gaussian Random Field permeability distributions)
+- **2D Compressible Navier-Stokes** (flow-map transition operator on hyperbolic gas dynamics)
+- **2D Biharmonic Equation** (fourth-order linear elliptic PDE with machine-precision linearity scaling)
 
 ---
 
-## 2. Estructura del Repositorio
+## Methodological Overview
 
-- **`protocol/`**: Motor estricto de generación, verificación de solapamiento (anti-fuga), entrenamiento, evaluación y agregación reproducible. Incluye configuraciones JSON por EDP y scripts Slurm para clúster HPC.
-- **`benchmarks/`**: Suite de evaluación experimental:
-  - `posthoc_jacobian.py`: Cuantificación de incertidumbre post-hoc sobre operadores deterministas congelados.
-  - `input_noise_propagation.py`: Propagación analítica de perturbaciones de entrada (Método Delta) frente a solvers físicos.
-  - `mc_benchmark.py`: Benchmark estocástico de Monte Carlo multiescala.
-  - `benchmark_jacobian_latency.py`: Protocolo estandarizado de medición de latencia en GPU/CPU.
-  - `fair_eval.py`: Comparativa uniforme de modelos y rescalado conformal.
-- **`deepxde-extensions/`**: Implementación de arquitecturas (`JacobianDeepONet`, `VanillaPinballDeepONet`, `QuantileDeepONet`, formulación latente y pérdidas asimétricas).
-- **`src/data_generation/`**: Solvers deterministas libres de fuga y generadores de datos con control de semillas y distribuciones fuera de dominio (OOD).
-- **`src/model_training/`**: Rutinas de entrenamiento procedural y serialización de modelos.
+1. **Analytical Sensitivity as a Spatial Shape Prior:** Rather than training high-capacity probabilistic quantile heads or running computationally expensive Monte Carlo ensembles, we leverage the analytic Jacobian norm of the branch network as a physically grounded spatial shape prior for prediction intervals.
+2. **Latent O(K) Gram Matrix Factorization:** For Cartesian DeepONet architectures, the trunk network processes only spatial coordinates and is functionally independent of branch sensor evaluations. Exploiting this algebraic structure allows exact pointwise variance computation via the latent Gram matrix in O(K) reverse-mode vector-Jacobian products, bypassing GPU out-of-memory limitations.
+3. **End-to-End Asymmetric Pinball Calibration:** Two learnable non-negative scalars (w_lower, w_upper) scale the spatial uncertainty shape via the Pinball loss function at the 90% confidence level (alpha = 0.10). This mechanism acts as an implicit Sobolev regularizer: model sensitivities naturally align with the underlying physical gradients without explicit derivative supervision during training.
+4. **Split-Conformal Calibration:** Post-hoc conformal rescaling on held-out calibration splits guarantees target empirical coverage, enabling fair and direct comparison of interval widths across baseline models.
 
 ---
 
-## 3. Instalación
+## Repository Structure
 
-Se recomienda utilizar un entorno virtual con Python 3.9 o superior:
+- [`protocol/`](protocol/README.md): Strict protocol engine for data generation, leakage verification, job-array training, interval score checkpoint selection, and aggregation.
+- [`benchmarks/`](benchmarks/README.md): Evaluation suite containing post-hoc conformal estimation on deterministic models, input noise propagation, Monte Carlo benchmarks, and latency profiling.
+- [`deepxde-extensions/`](deepxde-extensions/README.md): Custom neural operator architectures, including `JacobianDeepONet`, `VanillaPinballDeepONet`, and spatial quantile heads.
+- [`src/`](src/README.md): Ground-truth PDE solvers, data generation routines with strict seed control, and procedural model training pipelines.
+
+---
+
+## Installation and Requirements
+
+A Python 3.9+ virtual environment is recommended:
 
 ```bash
 python -m venv env_tesis
-source env_tesis/bin/activate  # En Windows: env_tesis\Scripts\activate
+source env_tesis/bin/activate  # On Windows: env_tesis\Scripts\activate
 pip install -r requirements.txt
 ```
 
+Core dependencies include PyTorch, DeepXDE, JAX, NumPy, SciPy, Matplotlib, and H5PY.
+
 ---
 
-## 4. Uso Rápido
+## Quickstart
 
-### Generación de Datos
-Para generar conjuntos de datos certificados sin solapamiento:
+### 1. Data Generation
+Generate certified dataset splits with isolated seed offsets:
 ```bash
 python src/data_generation/darcy_pdebench.py --num_samples 1000 --N 64 --output_path data/darcy_test.h5 --seed_offset 1000000
 ```
 
-### Entrenamiento
-Para entrenar una Jacobian-DeepONet con calibración asimétrica:
+### 2. Model Training
+Train a Jacobian-DeepONet with asymmetric Pinball loss and latent O(K) variance:
 ```bash
 python src/model_training/deeponet_training.py \
     --data_path data/darcy_train.h5 \
@@ -68,9 +64,9 @@ python src/model_training/deeponet_training.py \
     --batch_size 128
 ```
 
-### Ejecución en Clúster (Slurm)
-El protocolo automatizado encadena las etapas de generación, verificación, entrenamiento array, evaluación y agregación con dependencias afterok:
+### 3. Slurm HPC Protocol
+Launch the automated SLURM pipeline on compute nodes with afterok dependencies:
 ```bash
-bash protocol/slurm/launch.sh darcy_small --smoke  # Prueba de humo
-bash protocol/slurm/launch.sh darcy_small          # Barrido completo
+bash protocol/slurm/launch.sh darcy_small --smoke  # Fast smoke test
+bash protocol/slurm/launch.sh darcy_small          # Full parameter sweep
 ```

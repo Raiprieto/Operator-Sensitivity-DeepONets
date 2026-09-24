@@ -1,125 +1,79 @@
-# Protocolo de entrenamiento y evaluación
+# Experimental Protocol Engine
 
-Procedimiento único para entrenar y evaluar los cuatro benchmarks (Burgers,
-Biharmonic, Darcy, NS2D). Reemplaza a los `scripts/*/..._sweep.sh`, que ya no
-reproducían los modelos del paper y usaban tests contaminados.
+A unified, fail-hard protocol for training, validating, and evaluating neural operator uncertainty quantification across all four benchmark equations (Burgers, Biharmonic, Darcy Flow, and Navier-Stokes).
 
-**Principio:** el protocolo no advierte y sigue; **aborta** (código de salida 3)
-ante cualquier violación. Si una etapa falla, las siguientes no se ejecutan.
+---
 
-## Uso
+## Design Principles
 
-Desde la raíz del repo, en el nodo de login y con el código commiteado:
+1. **Fail-Hard Execution (Exit Code 3):** The protocol does not proceed upon warnings. Any violation halts execution immediately with an exit code of 3. This includes:
+   - Uncommitted modifications in `src/`, `deepxde-extensions/`, or `protocol/`.
+   - Data hash mismatch against `MANIFEST.json`.
+   - Seed range overlaps between train, validation, and test splits.
+   - Non-zero sample overlap between partitions (exact match or Euclidean distance below $10^{-6}$).
+   - Execution outside of Slurm resource allocations.
+   - Numerical instability (`NaN` or `Inf` in validation losses).
+2. **Strict Test Partition Isolation:** Test sets are never touched during training or hyperparameter tuning. Model checkpoints are selected exclusively via the *interval score* on the validation partition.
+3. **Single Source of Truth:** Benchmark configurations in `protocol/configs/<benchmark>.json` govern all parameters: split generators, seed bases, architectures, sigmas, learning rate schedules, and parameter sweeps.
 
-```bash
-bash protocol/slurm/launch.sh ns2d --smoke   # prueba de humo: minutos
-bash protocol/slurm/launch.sh ns2d           # barrido completo
-```
+---
 
-Encadena, con dependencias `afterok`:
+## Pipeline Stages
 
 ```
 gen train ┐
-gen val   ├─> verify ─> train (job array, 1 tarea por corrida) ─> eval ─> aggregate
+gen val   ├─> verify ─> train (SLURM job array) ─> eval ─> aggregate
 gen test  ┘
 ```
 
-`--from train|eval|aggregate` retoma desde una etapa; `--after JOBID` encadena la
-primera etapa a un job ya encolado; `--train-gres` y `--eval-gres` cambian la GPU
-(default: A100 para entrenar, A30 para evaluar). En A30 (partición MIG de 6 GB)
-caben los Jacobian de Darcy y NS2D; los de Burgers y Biharmonic necesitan A100.
+1. **`generate.py`**: Generates individual dataset splits or out-of-distribution evaluation sets (`ood:<name>`) with verified seed offsets.
+2. **`verify.py`**: Validates all three splits, verifies zero cross-split sample leakage, performs Kolmogorov-Smirnov distribution checks, and writes the signed `MANIFEST.json`.
+3. **`train.py`**: Executes an individual run. Evaluates validation metrics every `val_every` steps and preserves `best.pt` according to the lowest validation interval score. Computes and freezes the reference uncertainty scale (`unc_ref`) over training data.
+4. **`evaluate.py`**: Evaluates all trained sweep models on the held-out test split, verifying batch-size invariance and model hashes.
+5. **`aggregate.py`**: Compiles final results across all declared random seeds into `summary.md`, `summary.csv`, and `summary.json` reporting mean and standard deviation.
+6. **`conformal.py`**: Implements split-conformal rescaling calibrated on an independent half-split to compare prediction interval widths at identical 90% empirical coverage.
+7. **`correlations.py`**: Computes Spearman and Pearson correlations against error and physical sensitivity on certified test and OOD splits.
 
-## Fuente de verdad
+---
 
-`protocol/configs/<benchmark>.json` define **todo**: generador y semilla de cada
-split, tamaños, arquitectura, sigma por modelo, optimizador, validación y
-barrido (modelos × λ × semillas). Ningún hiperparámetro se pasa a mano.
+## Slurm Workflow
 
-### Registro de semillas
+The complete execution chain is automated via `protocol/slurm/launch.sh` with `afterok` job dependencies:
 
-| Split | Semilla base | Rango consumido |
-|---|---|---|
-| test | 1 000 000 | Darcy: `[s, s+n)` · Burgers/NS2D: `[s, s+4n+30000)` |
-| val | 2 000 000 | ídem |
-| train | 3 000 000 | ídem |
+```bash
+# Fast smoke test (verifies end-to-end pipeline in minutes)
+bash protocol/slurm/launch.sh darcy_small --smoke
 
-`common.validate_config` calcula el rango exacto que consume cada split y aborta
-si dos se cruzan. Biharmonic usa semillas de NumPy para val/test y el archivo de
-fair-sciml como train (no regenerable sin el solver FEM).
+# Full sweep execution
+bash protocol/slurm/launch.sh darcy_small
 
-## Garantías por etapa
-
-| Etapa | Aborta si… |
-|---|---|
-| todas | no corre dentro de Slurm · hay cambios sin commitear en `src/`, `deepxde-extensions/` o `protocol/` |
-| `generate` | el archivo ya existe · el generador falla · escribe una cantidad de muestras distinta a la pedida |
-| `verify` | falta un split o tiene otro `n` · grillas o dimensiones distintas · **alguna muestra se repite entre train/val/test** (exacto y a 1e-6) · val/test difieren en distribución del train (KS, p < 1e-4) |
-| `train` | falta el manifiesto · cambió la definición de los datos (splits, semillas, dimensión de entrada) después de verificar · el md5 de train/val no coincide · la corrida ya existe · no hay GPU · NaN/∞ en validación · ningún checkpoint válido |
-| `evaluate` | el md5 del test no coincide · alguna corrida del barrido no está completa o usó otros datos · la predicción cambia con el tamaño de batch · ya existe el resultado |
-| `aggregate` | falta cualquier corrida o evaluación del barrido |
-
-El entrenamiento **nunca lee el test**.
-
-## Decisiones de diseño
-
-1. **Validación y selección de checkpoint.** Cada `val_every` iteraciones se
-   evalúa en validación y se guarda el checkpoint con menor *interval score*
-   (Gneiting & Raftery, 2007). Es una regla de puntuación propia para
-   intervalos: no se puede mejorar solo ensanchando (sube el ancho) ni solo
-   angostando (suben las penalizaciones por no cubrir).
-2. **Selección de λ solo con validación.** `aggregate` marca, por modelo, el λ de
-   menor interval score medio en validación. El test no interviene en ninguna
-   decisión.
-3. **Todas las semillas o nada.** La tabla reporta media ± desviación estándar
-   sobre todas las semillas declaradas. No se puede reportar un subconjunto.
-4. **Intervalo determinista por muestra (cambio respecto del paper).** El modelo
-   Jacobian normaliza la forma de la incertidumbre por la media del batch
-   (paper, línea 244). Medido en los modelos originales: el ancho del intervalo
-   de una misma muestra cambia en promedio 19–29 % (hasta ×4.9) según el
-   tamaño del batch de inferencia, y la PICP de NS2D va de 49 % a 57 %. El
-   entrenamiento no cambia, pero al terminar se fija una referencia: la media de
-   la incertidumbre sobre todo el train (análogo a BatchNorm en evaluación).
-   `evaluate` comprueba que la predicción no depende del batch y además reporta
-   el modo original (batch = 50) solo como comparación. **Requiere actualizar la
-   definición de σ̄ en el paper.**
-5. **Sigma ligado al modelo.** La evaluación toma sigma, arquitectura, scalers y
-   referencia de la metadata de cada corrida. Evaluar con un sigma distinto al del
-   entrenamiento (lo que infló la cobertura del vanilla de NS2D) ya no es posible.
-6. **Misma arquitectura para Jacobian y vanilla**, como afirma el paper.
-
-## Salidas
-
-```
-data/protocol/<bench>/{train,val,test}.h5   (+ .provenance.json por split)
-data/protocol/<bench>/MANIFEST.json         md5, leakage, KS
-runs/protocol/<bench>/<modelo>_lam<λ>_seed<s>/
-    metadata.json      config, commit, md5, sigma, paso elegido, métricas val, unc_ref, versiones
-    best.pt            checkpoint seleccionado por validación
-    scalers.npz        normalización (ajustada solo con train)
-    val_history.csv    métricas de validación en cada evaluación
-    loss_history.csv
-    test_metrics.json
-runs/protocol/<bench>/summary.{md,csv,json}
+# Resume execution from a specific stage
+bash protocol/slurm/launch.sh darcy_small --from train
 ```
 
-El modo `--smoke` escribe en `data/protocol_smoke/` y `runs/protocol_smoke/`, con
-datos y entrenamientos mínimos, para probar la cadena completa en minutos.
+Supported flags include:
+- `--train-gres`: GPU specification for training tasks (default: `gpu:a100:1` or `gpu:a30mig:1`).
+- `--eval-gres`: GPU specification for evaluation tasks (default: `gpu:a30mig:1`).
+- `--after JOBID`: Chains the initial stage to an already queued Slurm job.
 
-## Usar datos externos (p. ej. los de otro colaborador)
+---
 
-En la config, reemplazar el generador de un split por `{"file": "ruta.h5", "n": N}`.
-`verify` aplica las mismas comprobaciones (incluido el leakage) antes de permitir
-entrenar con ellos.
+## Output Layout
 
-## Costo de referencia (A100)
+```
+data/protocol/<benchmark>/
+    train.h5, val.h5, test.h5
+    MANIFEST.json
 
-Un modelo Jacobian toma 3–4 h (Biharmonic λ = 20 llegó a 13.5 h); un vanilla,
-~0.5 h. El barrido completo (2 modelos × 4 λ × 3 semillas) son ~50 GPU·h por
-benchmark.
+runs/protocol/<benchmark>/<model>_lam<lambda>_seed<seed>/
+    metadata.json          # Configuration snapshot, git commit hash, and validation metrics
+    best.pt                # Checkpoint selected by validation interval score
+    scalers.npz            # Z-score normalization statistics
+    val_history.csv        # Validation history throughout training
+    test_metrics.json      # Final test evaluations
 
-## Limitaciones conocidas
-
-- **Biharmonic:** todo el dataset es `f = c·g` con `g` fija (rango 1). Aun sin
-  leakage, el test es un reescalado de muestras del train: mide interpolación en
-  un escalar, no generalización entre funciones de entrada.
-- **Burgers:** los datos usan ν ∈ [0.001, 0.1]; el paper dice [0.001, 0.01].
+runs/protocol/<benchmark>/
+    summary.md             # Aggregated Markdown table across all seeds
+    summary.csv            # Tabular results
+    summary.json           # Machine-readable output
+```
