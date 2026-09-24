@@ -20,8 +20,9 @@ def create_jacobian_deeponet_softplus(is_cartesian=False):
             self.jacobian_type = jacobian_type
             self.scale_mode = scale_mode
             self.ema_momentum = ema_momentum
-            self.register_buffer("unc_scale_ema", torch.zeros(1))
-            self.register_buffer("unc_scale_init", torch.zeros(1, dtype=torch.bool))
+            if scale_mode == "ema":
+                self.register_buffer("unc_scale_ema", torch.zeros(1))
+                self.register_buffer("unc_scale_init", torch.zeros(1, dtype=torch.bool))
             
             # Pesos asimétricos entrenables
             # Inicializados en 0 para que softplus(0) ≈ 0.69
