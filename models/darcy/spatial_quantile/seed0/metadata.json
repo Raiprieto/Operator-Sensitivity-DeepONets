@@ -134,7 +134,7 @@
   },
   "slurm_job": "912813",
   "slurm_array_task": "1",
-  "host": "compute-gpu-2-8.mansci.uai.cl",
+  "host": "compute-gpu-2-8",
   "started": "2026-09-23 12:10:22",
   "versions": {
     "python": "3.9.25",

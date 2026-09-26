@@ -2,7 +2,7 @@
 
 **Archivo generado.** Regenerar con `python protocol/index_models.py > protocol/MODELS.md` despues de cada barrido; no editar a mano.
 
-Las rutas son relativas a la raiz del repo: `/nfs_home/rprieto/Tesis-RP` en el cluster (host `hpc`), `repositorio_tesis/` en local. Los `runs/` y los `data/` viven solo en el cluster.
+Las rutas son relativas a la raiz del repo: la raiz del checkout en el cluster, `repositorio_tesis/` en local. Los `runs/` y los `data/` viven solo en el cluster.
 
 ## Datos
 

@@ -22,7 +22,9 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import common as C  # noqa: E402
 
-CLUSTER = "/nfs_home/rprieto/Tesis-RP"
+# Raiz del checkout en el cluster, solo para imprimir rutas absolutas en el
+# indice. Se toma del entorno para no fijar una ruta de usuario en el repo.
+CLUSTER = os.environ.get("TESIS_CLUSTER_ROOT", "/path/to/checkout")
 CONFIGS = sorted(os.path.basename(p)[:-5]
                  for p in glob.glob(os.path.join(C.REPO, "protocol", "configs", "*.json")))
 
